@@ -11,6 +11,7 @@ const {
   buildHtmlResume,
   buildResume,
   parseMarkdown,
+  readBuiltInLogos,
   readBuiltInSchoolLogos,
   renderDocument,
   renderHtmlDocument,
@@ -79,6 +80,7 @@ async function testWithTexPathUsesExplicitExtraPath() {
 }
 
 async function testDebugServerSurvivesLongRender() {
+  const expectedBuiltInLogoCount = readBuiltInLogos(path.resolve(__dirname, "..")).length;
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "omr-debug-test-"));
   const binDir = path.join(tempDir, "bin");
   makeFakeLatexmk(binDir);
@@ -121,7 +123,7 @@ async function testDebugServerSurvivesLongRender() {
     const scripts = [...page.body.matchAll(/<script>([\s\S]*?)<\/script>/g)];
     assert.ok(scripts.length, "debug page should include an inline script");
     assert.doesNotThrow(() => new vm.Script(scripts.at(-1)[1]));
-    assert.strictEqual((page.body.match(/class="logoChip builtinLogoChip"/g) || []).length, 21);
+    assert.strictEqual((page.body.match(/class="logoChip builtinLogoChip"/g) || []).length, expectedBuiltInLogoCount);
     assert.match(page.body, /data-logo-id="china-mobile"/);
     assert.match(page.body, /data-logo-id="tongyi-lab"/);
     assert.match(page.body, /data-logo-id="deepseek"/);
